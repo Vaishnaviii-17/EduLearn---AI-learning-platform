@@ -1,0 +1,213 @@
+
+# ⚙️ **1️⃣ AI Learning Assistant (assistant.js + assistant.py)**
+
+## 🖥️ **Frontend (assistant.js)**
+
+### 🔹 **Main Functions**
+
+| Function                            | Purpose                                                                                     | Connected Backend Endpoint                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `handleFileChange()`                | Handles file uploads (PDF, DOCX, PPTX, or image). Sets preview and resets previous results. | —                                                               |
+| `uploadFile(endpoint)`              | Sends the selected file to the backend using Axios. Handles multipart form uploads.         | `/assistant/{endpoint}`                                         |
+| `handleSummarize(type)`             | Requests Quick or Detailed summary from backend and cleans/formats the returned text.       | `/assistant/summarize/quick` or `/assistant/summarize/detailed` |
+| `handleFlowchart()`                 | Sends file for conceptual flowchart generation and renders output with React Flow.          | `/assistant/flowchart`                                          |
+| `handleQuizGenerate()`              | Requests an auto-generated 10-question quiz from backend.                                   | `/assistant/quiz`                                               |
+| `handleSelectOption(index, option)` | Tracks user’s selected quiz options.                                                        | —                                                               |
+| `handleQuizSubmit()`                | Submits user answers to backend for scoring and displays results.                           | `/assistant/quiz/submit`                                        |
+
+### 🧩 **Flow Summary (Frontend)**
+
+1. User uploads file → `handleFileChange()`
+2. Chooses task (summary / flowchart / quiz)
+3. Corresponding function (`handleSummarize`, `handleFlowchart`, or `handleQuizGenerate`) calls backend endpoint
+4. Response is displayed:
+
+   * Summary → structured list
+   * Flowchart → ReactFlow diagram
+   * Quiz → interactive MCQs + results after submission
+
+---
+
+## ⚙️ **Backend (assistant.py)**
+
+### 🔹 **Core Utility Functions**
+
+| Function                    | Purpose                                                                                                   |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `extract_text(upload_file)` | Detects file type and extracts readable text using appropriate library (PyPDF2, docx, pptx, pytesseract). |
+| `clean_text(text)`          | Removes hyphenations, extra spaces, and unnecessary formatting before processing.                         |
+
+---
+
+### 🔹 **Summarization**
+
+| Function                                                                    | Description                                                                          |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `summarize_with_gemini(text, mode)`                                         | Uses **Gemini API (models/gemini-2.5-flash)** to create quick or detailed summaries. |
+| `summarize_with_huggingface(text, mode)`                                    | Uses **Hugging Face Transformers** for summarization if Gemini fails.                |
+| Endpoints: `/assistant/summarize/quick` and `/assistant/summarize/detailed` |                                                                                      |
+
+---
+
+### 🔹 **Flowchart Generator**
+
+| Function                         | Description                                                                                    |
+| -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `generate_flowchart(text)`       | Uses **Gemini Pro** to produce JSON structured nodes and edges representing a conceptual flow. |
+| Endpoint: `/assistant/flowchart` |                                                                                                |
+
+---
+
+### 🔹 **Quiz Generator**
+
+| Function                                                  | Description                                                                      |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `generate_quiz(text)`                                     | Uses **Gemini Pro** to create 10-question MCQ quiz with JSON format.             |
+| `grade_quiz(submitted)`                                   | Compares user’s answers with correct ones and returns score + detailed feedback. |
+| Endpoints: `/assistant/quiz` and `/assistant/quiz/submit` |                                                                                  |
+
+---
+
+### 🧩 **Flow Summary (Backend)**
+
+1. Frontend sends file → `/assistant/...`
+2. `extract_text()` reads and cleans content
+3. Depending on endpoint:
+
+   * Summarization → `summarize_with_gemini()` → returns text summary
+   * Flowchart → `generate_flowchart()` → returns nodes & edges
+   * Quiz → `generate_quiz()` → returns questions
+   * Quiz Submit → `grade_quiz()` → returns score
+4. Backend sends JSON back to frontend
+
+---
+
+# 💻 **2️⃣ Code Explainer (code_explainer.js + code_explainer.py)**
+
+*(Assuming your structure follows your other modules — this is the standard logic used in AI Explainer tools.)*
+
+## 🖥️ **Frontend (code_explainer.js)**
+
+### 🔹 **Functions**
+
+| Function             | Purpose                                               | Backend Endpoint |
+| -------------------- | ----------------------------------------------------- | ---------------- |
+| `handleCodeInput(e)` | Captures user-entered code or uploaded file.          | —                |
+| `analyzeCode()`      | Sends code to backend for explanation + improvements. | `/code/explain`  |
+| `highlightCode()`    | (Optional) Adds syntax highlighting (e.g., Prism.js). | —                |
+
+### 🧩 **Frontend Flow**
+
+1. User pastes or uploads code
+2. Clicks “Explain Code”
+3. `analyzeCode()` → Sends request to backend
+4. Response displayed as:
+
+   * **Language detected**
+   * **Functions/features list**
+   * **Step-by-step explanation**
+   * **Possible improvements**
+
+---
+
+## ⚙️ **Backend (code_explainer.py)**
+
+### 🔹 **Functions**
+
+| Function                    | Description                                                                            |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| `detect_language(code)`     | Identifies programming language using keywords or models.                              |
+| `extract_functions(code)`   | Parses code and lists main functions or methods.                                       |
+| `explain_code_gemini(code)` | Uses **Gemini Pro** to provide detailed explanation of logic, flow, and functionality. |
+| `improve_code_gemini(code)` | Suggests optimizations or cleaner alternatives.                                        |
+| Endpoint: `/code/explain`   |                                                                                        |
+
+### 🧩 **Backend Flow**
+
+1. Receives user code
+2. Detects language → extracts structure
+3. Sends code to Gemini for explanation and improvement suggestions
+4. Returns structured JSON → `{language, functions, explanation, improvements}`
+
+---
+
+# 🧑‍🏫 **3️⃣ Virtual Mentor (mentor.js + mentor.py)**
+
+## 🖥️ **Frontend (mentor.js)**
+
+### 🔹 **Main Functions**
+
+| Function                 | Purpose                                                        | Backend Endpoint |
+| ------------------------ | -------------------------------------------------------------- | ---------------- |
+| `setSelectedAvatar(a)`   | User selects an avatar (mentor personality).                   | —                |
+| `sendMessage()`          | Sends user question to backend (includes mentor persona).      | `/mentor/chat`   |
+| `speak(text, voicePref)` | Uses Web Speech API for mentor’s voice reply.                  | —                |
+| `handleVoiceInput()`     | Uses browser speech recognition to capture user’s voice input. | —                |
+
+### 🧩 **Frontend Flow**
+
+1. User chooses an avatar (e.g., Ada, Alex, Zoe, Max).
+2. Inputs question or uses microphone → triggers `sendMessage()`.
+3. Sends request to backend → gets response.
+4. Displays mentor message with speech synthesis voice.
+5. Allows switching mentor anytime with “Choose another mentor” button.
+
+---
+
+## ⚙️ **Backend (mentor.py)**
+
+### 🔹 **Functions**
+
+| Function                    | Description                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| `chat_with_mentor(message)` | Core logic that calls **Gemini API** to generate mentor-style answers. |
+| Endpoint: `/mentor/chat`    |                                                                        |
+
+### 🧩 **Backend Flow**
+
+1. Receives user message + mentor persona description.
+2. Constructs Gemini prompt with mentor’s tone and expertise.
+3. Generates a natural, friendly explanation or motivational response.
+4. Returns `{"reply": "...formatted text..."}` to frontend.
+
+---
+
+# 🔁 **DATA FLOW SUMMARY**
+
+```
+Frontend (React)  <----->  Backend (FastAPI)
+---------------------------------------------
+AI Learning Assistant:
+    handleSummarize()      →  /assistant/summarize/*
+    handleFlowchart()      →  /assistant/flowchart
+    handleQuizGenerate()   →  /assistant/quiz
+    handleQuizSubmit()     →  /assistant/quiz/submit
+
+Code Explainer:
+    analyzeCode()          →  /code/explain
+
+Virtual Mentor:
+    sendMessage()          →  /mentor/chat
+```
+
+---
+
+# 🧠 **OVERALL SYSTEM FLOW (Combined)**
+
+```
+Frontend:
+  Index → Auth → Dashboard
+    ├── Assistant (upload → summarize/quiz/flowchart)
+    ├── Virtual Mentor (chat + voice)
+    └── Code Explainer (AI code analysis)
+
+Backend:
+  /assistant/*     → Summarization, Flowchart, Quiz
+  /mentor/chat     → Conversational AI Mentor
+  /code/explain    → Code explanation + improvement
+```
+
+---
+
+Would you like me to make a **visual system diagram (frontend + backend data flow)** showing these interactions for your project report or presentation?
+It would clearly show how requests and responses move between modules.
