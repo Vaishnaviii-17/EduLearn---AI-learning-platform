@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 ##  How to Run the Project
 
@@ -81,3 +82,7 @@ pip install -r requirements.txt
 3. Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 4. Upload files or chat with mentor — your **AI Learning Assistant** is ready! 🎓
 
+=======
+# EduLearn---AI-learning-platform
+It is a ai learning platform for students with features like summarizer, quiz , flowchart, code explainer and virtual mentor
+>>>>>>> 46b74a4b8334707c25cc35b2d05663b6d25dcd4f
