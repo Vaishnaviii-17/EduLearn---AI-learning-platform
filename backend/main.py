@@ -63,6 +63,7 @@ async def root():
         "message": "Backend running with FastAPI + Google Gemini 🚀",
         "gemini_enabled": bool(GEMINI_KEY),
         "frontend_allowed": [
+            "https://edu-learn-ai-learning-platform.vercel.app"  # ✅ Added vercel
             "http://localhost:3000",
             "http://127.0.0.1:3000"
         ],
@@ -94,12 +95,17 @@ async def disconnect(sid):
 # ---------------------------
 # Run server
 # ---------------------------
-if __name__ == "__main__":
-    print("🚀 Starting FastAPI + Google Gemini backend on http://127.0.0.1:8000")
-    print("🌐 CORS Origins allowed: http://localhost:3000, http://127.0.0.1:3000")
-    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
 
 from backend.routers import auth, assistant, explainer, virtual_mentor
+if __name__ == "__main__":
+    import os
+
+    port = int(os.environ.get("PORT", 10000))  # Render assigns a dynamic port
+    print(f"🚀 Starting FastAPI backend on 0.0.0.0:{port}")
+    print("🌐 CORS Origins allowed: http://localhost:3000, http://127.0.0.1:3000")
+
+    import uvicorn
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=port)
 
 # Include new router
 fastapi_app.include_router(auth.router)
