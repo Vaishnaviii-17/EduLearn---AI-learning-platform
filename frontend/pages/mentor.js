@@ -1,9 +1,8 @@
-"use client";
 import { useState } from "react";
+import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Navbar from "../components/Navbar";
-import { postData } from "@/utils/api"; // ✅ use central API helper
 
 export default function VirtualMentor() {
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -11,7 +10,7 @@ export default function VirtualMentor() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🧑‍🏫 Predefined mentor avatars
+  // 🧑‍🏫 Predefined avatars
   const avatars = [
     {
       name: "Professor Ada",
@@ -39,7 +38,7 @@ export default function VirtualMentor() {
     },
   ];
 
-  // 🔊 Text-to-speech for mentor replies
+  // 🔊 Text-to-speech
   const speak = (text, voicePref) => {
     if (!window.speechSynthesis) return;
     const synth = window.speechSynthesis;
@@ -62,13 +61,13 @@ export default function VirtualMentor() {
     setLoading(true);
 
     try {
-      const res = await postData("mentor/chat", {
-        message: `${selectedAvatar.personality}\n\nStudent: ${userMsg.text}`,
+      const res = await axios.post("http://127.0.0.1:8000/mentor/chat", null, {
+        params: { message: `${selectedAvatar.personality}\n\nStudent: ${userMsg.text}` },
       });
 
-      const aiMsg = { sender: "mentor", text: res.reply };
+      const aiMsg = { sender: "mentor", text: res.data.reply };
       setChat((prev) => [...prev, aiMsg]);
-      speak(res.reply, selectedAvatar.voice);
+      speak(res.data.reply, selectedAvatar.voice);
     } catch (err) {
       console.error(err);
       alert("Error: " + (err.response?.data?.detail || err.message));
@@ -112,6 +111,7 @@ export default function VirtualMentor() {
       alert("Microphone error: " + error.message);
     }
   };
+
   // -------------------------
   // UI
   // -------------------------

@@ -1,31 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { fetchData } from "@/utils/api";
+import { useState } from "react";
 
 export default function AvatarSelection() {
   const router = useRouter();
-  const [selected, setSelected] = useState(null);
-  const [users, setUsers] = useState([]);
   const avatars = [
     "/avatar/avatar1.png",
     "/avatar/avatar2.png",
     "/avatar/avatar3.png",
     "/avatar/avatar4.png",
   ];
-
-  // ✅ Fetch user data once when page loads
-  useEffect(() => {
-    async function getUsers() {
-      try {
-        const data = await fetchData("api/users");
-        setUsers(data);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-      }
-    }
-    getUsers();
-  }, []);
+  const [selected, setSelected] = useState(null);
 
   const handleSave = () => {
     if (!selected) {
@@ -33,7 +18,7 @@ export default function AvatarSelection() {
       return;
     }
     localStorage.setItem("userAvatar", selected);
-    router.push("/dashboard");
+    router.push("/dashboard"); // Redirect to dashboard
   };
 
   return (
@@ -65,7 +50,6 @@ export default function AvatarSelection() {
     </div>
   );
 }
-
 
 const styles = {
   container: {

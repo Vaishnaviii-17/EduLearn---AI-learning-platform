@@ -1,203 +1,277 @@
-"use client";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { postData } from "@/utils/api"; // 
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async () => {
     try {
       if (isLogin) {
-          await postData("auth/login", form);
+        await axios.post("http://127.0.0.1:8000/auth/login", {
+          email: form.email,
+          password: form.password,
+        });
+        alert("Login success!");
+        router.push("/dashboard");
       } else {
-        await postData("auth/signup", form);
+        await axios.post("http://127.0.0.1:8000/auth/signup", form);
+        alert("Signup success!");
+        router.push("/dashboard");
       }
-
-      // ✅ After successful login/signup
-      router.push("/avatar");
-    } catch (error) {
-      console.error("Authentication failed:", error);
-      alert(
-        error.response?.data?.detail ||
-          "Authentication failed. Please try again."
-      );
+    } catch (err) {
+      alert("Error: " + (err.response?.data?.detail || err.message));
     }
   };
-  return (
-    <div style={styles.container}>
-      {/* Left side with logo */}
-      <div style={styles.leftPanel}>
-        <img src="/icons/logo.png" alt="EduLearn Logo" style={styles.logo} />
-        <h1 style={styles.brand}>EduLearn AI</h1>
-        <p style={styles.tagline}>Your AI Learning Companion</p>
-      </div>
 
-      {/* Right side form */}
-      <div style={styles.rightPanel}>
-        <div style={styles.tabs}>
-          <button
-            onClick={() => setIsLogin(true)}
-            style={{
-              ...styles.tab,
-              borderBottom: isLogin ? "2px solid #2563eb" : "none",
-              color: isLogin ? "#2563eb" : "#6b7280",
-            }}
-          >
-            Login
-          </button>
-          <button
-            onClick={() => setIsLogin(false)}
-            style={{
-              ...styles.tab,
-              borderBottom: !isLogin ? "2px solid #2563eb" : "none",
-              color: !isLogin ? "#2563eb" : "#6b7280",
-            }}
-          >
-            Sign Up
-          </button>
+  const styles = {
+    container: {
+      display: "flex",
+      height: "100vh",
+      fontFamily: "'Poppins', sans-serif",
+      backgroundColor: "#f4f7fb",
+    },
+    left: {
+      flex: 1.2,
+      background: "linear-gradient(135deg, #0072ff 0%, #00c6ff 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "white",
+      padding: "20px",
+    },
+    logoBox: { textAlign: "center" },
+    logoIcon: {
+      background: "white",
+      color: "#007bff",
+      fontSize: "2rem",
+      fontWeight: "bold",
+      width: "70px",
+      height: "70px",
+      borderRadius: "16px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      margin: "0 auto 20px auto",
+      boxShadow: "0 3px 8px rgba(255,255,255,0.3)",
+    },
+    logoTitle: {
+      fontSize: "1.8rem",
+      fontWeight: "600",
+      marginBottom: "6px",
+    },
+    logoSubtitle: {
+      fontSize: "0.95rem",
+      opacity: 0.9,
+    },
+    right: {
+      flex: 1,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "white",
+    },
+    card: {
+      width: "370px",
+      background: "white",
+      borderRadius: "18px",
+      boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+      padding: "35px 40px",
+    },
+    tabs: {
+      display: "flex",
+      justifyContent: "space-between",
+      marginBottom: "25px",
+    },
+    tabBtn: (active) => ({
+      flex: 1,
+      background: "none",
+      border: "none",
+      fontSize: "1.1rem",
+      paddingBottom: "8px",
+      cursor: "pointer",
+      borderBottom: active ? "2px solid #007bff" : "2px solid transparent",
+      color: active ? "#007bff" : "#666",
+      fontWeight: active ? "600" : "500",
+      transition: "0.3s",
+    }),
+    input: {
+      width: "100%",
+      padding: "12px 14px",
+      marginBottom: "15px",
+      borderRadius: "8px",
+      border: "1px solid #dfe3eb",
+      background: "#f6f8fc",
+      fontSize: "0.95rem",
+      outline: "none",
+      transition: "0.3s",
+    },
+    inputFocus: { borderColor: "#007bff", background: "white" },
+    passwordWrapper: { position: "relative" },
+    showBtn: {
+      position: "absolute",
+      right: "12px",
+      top: "11px",
+      cursor: "pointer",
+      color: "#007bff",
+      fontSize: "0.85rem",
+      background: "none",
+      border: "none",
+    },
+    options: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      fontSize: "0.85rem",
+      marginBottom: "18px",
+    },
+    forgot: { color: "#007bff", textDecoration: "none" },
+    submit: {
+      width: "100%",
+      padding: "12px",
+      background: "#007bff",
+      border: "none",
+      borderRadius: "8px",
+      color: "white",
+      fontSize: "1rem",
+      cursor: "pointer",
+      marginBottom: "22px",
+      fontWeight: "500",
+      boxShadow: "0 3px 10px rgba(0,123,255,0.3)",
+      transition: "0.3s",
+    },
+    divider: {
+      textAlign: "center",
+      color: "#888",
+      fontSize: "0.9rem",
+      marginBottom: "15px",
+    },
+    socials: {
+      display: "flex",
+      justifyContent: "center",
+      gap: "15px",
+    },
+    socialIcon: {
+      width: "32px",
+      height: "32px",
+      cursor: "pointer",
+      borderRadius: "50%",
+      transition: "transform 0.2s",
+    },
+    responsive: `
+      @media(max-width: 850px) {
+        .auth-wrapper {
+          flex-direction: column;
+        }
+      }
+    `,
+  };
+
+  return (
+    <>
+      <style>{styles.responsive}</style>
+      <div className="auth-wrapper" style={styles.container}>
+        {/* LEFT SIDE */}
+        <div style={styles.left}>
+          <div style={styles.logoBox}>
+            <div style={styles.logoIcon}>E</div>
+            <div style={styles.logoTitle}>EduLearn AI</div>
+            <div style={styles.logoSubtitle}>Your AI Learning Companion</div>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {!isLogin && (
-            <input
-              type="text"
-              placeholder="Username"
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              style={styles.input}
-              required
-            />
-          )}
-          <input
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            style={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            style={styles.input}
-            required
-          />
+        {/* RIGHT SIDE */}
+        <div style={styles.right}>
+          <div style={styles.card}>
+            {/* Tabs */}
+            <div style={styles.tabs}>
+              <button
+                style={styles.tabBtn(isLogin)}
+                onClick={() => setIsLogin(true)}
+              >
+                Login
+              </button>
+              <button
+                style={styles.tabBtn(!isLogin)}
+                onClick={() => setIsLogin(false)}
+              >
+                Sign Up
+              </button>
+            </div>
 
-          <div style={styles.options}>
-            <label>
-              <input type="checkbox" /> Remember me
-            </label>
-            <a href="#" style={styles.forgotPassword}>
-              Forgot password?
-            </a>
+            {/* Form */}
+            <div>
+              {!isLogin && (
+                <input
+                  style={styles.input}
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value={form.username}
+                  onChange={handleChange}
+                />
+              )}
+              <input
+                style={styles.input}
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+              />
+
+              <div style={styles.passwordWrapper}>
+                <input
+                  style={styles.input}
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleChange}
+                />
+                <button
+                  type="button"
+                  style={styles.showBtn}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+
+              <div style={styles.options}>
+                <label>
+                  <input type="checkbox" /> Remember me
+                </label>
+                <a href="#" style={styles.forgot}>
+                  Forgot password?
+                </a>
+              </div>
+
+              <button style={styles.submit} onClick={handleSubmit}>
+                {isLogin ? "Login" : "Sign Up"}
+              </button>
+
+              <div style={styles.divider}>or continue with</div>
+
+              <div style={styles.socials}>
+                <img src="/google.png" alt="Google" style={styles.socialIcon} />
+                <img
+                  src="/facebook.png"
+                  alt="Facebook"
+                  style={styles.socialIcon}
+                />
+                <img src="/apple.png" alt="Apple" style={styles.socialIcon} />
+              </div>
+            </div>
           </div>
-
-          <button type="submit" style={styles.submitButton}>
-            {isLogin ? "Login" : "Sign Up"}
-          </button>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    height: "100vh",
-    fontFamily: "Poppins, sans-serif",
-  },
-  leftPanel: {
-    flex: 1,
-    background: "linear-gradient(135deg, #1e3a8a, #2563eb)",
-    color: "white",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logo: {
-    width: "90px",
-    height: "90px",
-    borderRadius: "20px",
-    marginBottom: "20px",
-    boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-    background: "white",
-    padding: "10px",
-  },
-  brand: {
-    fontSize: "32px",
-    fontWeight: "700",
-  },
-  tagline: {
-    fontSize: "16px",
-    opacity: 0.9,
-  },
-  rightPanel: {
-    flex: 1,
-    backgroundColor: "#f9fafb",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    borderTopLeftRadius: "20px",
-    borderBottomLeftRadius: "20px",
-    boxShadow: "0 0 20px rgba(0,0,0,0.1)",
-  },
-  tabs: {
-    display: "flex",
-    justifyContent: "center",
-    width: "100%",
-    marginBottom: "20px",
-  },
-  tab: {
-    padding: "10px 20px",
-    background: "none",
-    border: "none",
-    fontSize: "16px",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-  form: {
-    width: "70%",
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-  },
-  input: {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #d1d5db",
-    outline: "none",
-    fontSize: "14px",
-  },
-  options: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "13px",
-    alignItems: "center",
-  },
-  forgotPassword: {
-    color: "#2563eb",
-    textDecoration: "none",
-  },
-  submitButton: {
-    marginTop: "10px",
-    background: "#2563eb",
-    color: "white",
-    padding: "12px",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-    transition: "0.3s",
-  },
-};
