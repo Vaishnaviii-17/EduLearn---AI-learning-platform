@@ -4,3 +4,4 @@ python-socketio[asgi]
 mysql-connector-python
 python-multipart
 transformers
+python-dotenv
