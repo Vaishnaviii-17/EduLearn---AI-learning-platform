@@ -1,6 +1,7 @@
+"use client";
 import { useState } from "react";
-import axios from "axios";
 import Navbar from "../components/Navbar";
+import { postData } from "@/utils/api";
 
 export default function Explainer() {
   const [code, setCode] = useState("");
@@ -23,20 +24,18 @@ export default function Explainer() {
       alert("Please enter some code first.");
       return;
     }
-    setLoading(true);
 
+    setLoading(true);
     try {
-      const res = await axios.post("http://127.0.0.1:8000/explainer/explain", { code });
-      setLanguage(res.data.language || "Unknown");
-      setFeatures(res.data.features || []);
-      setExplanation(cleanMarkdown(res.data.explanation || "No explanation available."));
+      const res = await postData("explainer/explain", { code });
+      setLanguage(res.language || "Unknown");
+      setFeatures(res.features || []);
+      setExplanation(cleanMarkdown(res.explanation || "No explanation available."));
     } catch (err) {
       alert("Error: " + (err.response?.data?.detail || err.message));
     }
-
     setLoading(false);
   };
-
   return (
     <>
       <Navbar />

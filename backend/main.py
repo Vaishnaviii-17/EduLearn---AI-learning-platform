@@ -36,8 +36,7 @@ fastapi_app = FastAPI(title="AI Learning SuperApp (Gemini Powered)")
 fastapi_app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",  # ✅ Added fallback
+        "https://edu-learn-ai-learning-platform.vercel.app"  # ✅ Added vercel
     ],
     allow_credentials=True,
     allow_methods=["*"],

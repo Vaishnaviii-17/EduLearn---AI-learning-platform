@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { postData } from "@/utils/api"; // 
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,16 +13,21 @@ export default function AuthPage() {
     e.preventDefault();
     try {
       if (isLogin) {
-        await axios.post("http://127.0.0.1:8000/auth/login", form);
+          await postData("auth/login", form);
       } else {
-        await axios.post("http://127.0.0.1:8000/auth/signup", form);
+        await postData("auth/signup", form);
       }
+
+      // ✅ After successful login/signup
       router.push("/avatar");
     } catch (error) {
-      alert("Authentication failed");
+      console.error("Authentication failed:", error);
+      alert(
+        error.response?.data?.detail ||
+          "Authentication failed. Please try again."
+      );
     }
   };
-
   return (
     <div style={styles.container}>
       {/* Left side with logo */}

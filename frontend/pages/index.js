@@ -1,6 +1,10 @@
 "use client"
 import Link from "next/link"
 import React from "react"
+import { fetchData } from "@/utils/api";
+
+const data = await fetchData("/api/users");
+
 
 export default function Home() {
   return (

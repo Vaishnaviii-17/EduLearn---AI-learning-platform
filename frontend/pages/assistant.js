@@ -3,7 +3,7 @@ import axios from "axios";
 import ReactFlow, { Background, Controls } from "reactflow";
 import "reactflow/dist/style.css";
 import Navbar from "../components/Navbar";
-
+import { uploadFile, postData } from "@/utils/api";
 /**
  * Assistant (frontend)
  * - Summary (quick/detailed)
@@ -63,33 +63,30 @@ export default function Assistant() {
     }
   };
 
-  const uploadFile = async (endpoint) => {
-    if (!file) {
-      alert("Please choose a file first.");
-      return null;
-    }
-    const formData = new FormData();
-    formData.append("file", file);
+const handleUpload = async (endpoint) => {
+  if (!file) {
+    alert("Please choose a file first.");
+    return null;
+  }
 
-    try {
-      const res = await axios.post(`http://127.0.0.1:8000/assistant/${endpoint}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        timeout: 180000,
-      });
-      return res.data;
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("Error: " + (err.response?.data?.detail || err.message));
-      return null;
-    }
-  };
+  try {
+    // ✅ use the imported uploadFile() from utils/api.js
+    const data = await uploadFile(`assistant/${endpoint}`, file);
+    return data;
+  } catch (err) {
+    console.error("Upload error:", err);
+    alert("Error: " + (err.response?.data?.detail || err.message));
+    return null;
+  }
+};
+
 
   // ---------------- Summary ----------------
   const handleSummarize = async (type) => {
     setLoading(true);
     setSection("summary");
     setSummary([]);
-    const data = await uploadFile(`summarize/${type}`);
+    const data = await handleUpload(`summarize/${type}`);
     if (data?.summary) {
       const cleaned = cleanText(data.summary);
       // Turn into structured sections (heading -> points)
@@ -224,7 +221,7 @@ export default function Assistant() {
     setSection("flowchart");
     setFlowchartData(null);
 
-    const data = await uploadFile("flowchart");
+    const data = await handleUpload("flowchart");
     if (!data) {
       setFlowchartData({ nodes: [], edges: [] });
       setLoading(false);
@@ -253,7 +250,7 @@ export default function Assistant() {
     setQuiz([]);
     setQuizAnswers({});
     setQuizResults(null);
-    const data = await uploadFile("quiz");
+    const data = await handleUpload("quiz");
     if (data?.quiz) setQuiz(data.quiz);
     else alert("No quiz generated. Try a different document.");
     setLoading(false);
@@ -274,10 +271,8 @@ export default function Assistant() {
     });
 
     try {
-      const res = await axios.post("http://localhost:8000/assistant/quiz/submit", payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-      setQuizResults(res.data);
+     const res = await postData("assistant/quiz/submit", payload);
+setQuizResults(res);
     } catch (err) {
       console.error("Quiz submit error:", err);
       alert("Error submitting quiz: " + (err.response?.data?.detail || err.message));

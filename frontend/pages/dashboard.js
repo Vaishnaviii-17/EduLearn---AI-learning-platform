@@ -1,9 +1,25 @@
 "use client";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
+import { fetchData } from "@/utils/api";
 
 export default function Dashboard() {
   const router = useRouter();
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const data = await fetchData("api/users");
+        setUsers(data);
+        console.log("Fetched users:", data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    }
+
+    loadUsers();
+  }, []);
 
   return (
     <>
