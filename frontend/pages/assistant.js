@@ -72,7 +72,7 @@ export default function Assistant() {
     formData.append("file", file);
 
     try {
-      const res = await axios.post(`http://127.0.0.1:8000/assistant/${endpoint}`, formData, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         timeout: 180000,
       });
@@ -274,7 +274,7 @@ export default function Assistant() {
     });
 
     try {
-      const res = await axios.post("http://localhost:8000/assistant/quiz/submit", payload, {
+      const res = await axios.post("${process.env.NEXT_PUBLIC_API_URL}/assistant/quiz/submit", payload, {
         headers: { "Content-Type": "application/json" },
       });
       setQuizResults(res.data);

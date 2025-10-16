@@ -61,7 +61,7 @@ export default function VirtualMentor() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/mentor/chat", null, {
+      const res = await axios.post("${process.env.NEXT_PUBLIC_API_URL}/mentor/chat", null, {
         params: { message: `${selectedAvatar.personality}\n\nStudent: ${userMsg.text}` },
       });
 

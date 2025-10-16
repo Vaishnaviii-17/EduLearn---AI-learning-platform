@@ -10,7 +10,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     // connect to backend Socket.IO server
-    socket = io("http://127.0.0.1:8000", {
+    socket = io("${process.env.NEXT_PUBLIC_API_URL}", {
       transports: ["websocket"], // ensures proper connection with FastAPI + uvicorn
     });
 

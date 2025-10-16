@@ -14,14 +14,14 @@ export default function AuthPage() {
   const handleSubmit = async () => {
     try {
       if (isLogin) {
-        await axios.post("http://127.0.0.1:8000/auth/login", {
+        await axios.post("${process.env.NEXT_PUBLIC_API_URL}/auth/login", {
           email: form.email,
           password: form.password,
         });
         alert("Login success!");
         router.push("/dashboard");
       } else {
-        await axios.post("http://127.0.0.1:8000/auth/signup", form);
+        await axios.post("${process.env.NEXT_PUBLIC_API_URL}/auth/signup", form);
         alert("Signup success!");
         router.push("/dashboard");
       }

@@ -38,6 +38,7 @@ fastapi_app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000", # ✅ Added fallback  
+        "https://edulearn-ai-learning-platform-1.onrender.com",  # ✅ your frontend live URL
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -26,7 +26,7 @@ export default function Explainer() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/explainer/explain", { code });
+      const res = await axios.post("${process.env.NEXT_PUBLIC_API_URL}/explainer/explain", { code });
       setLanguage(res.data.language || "Unknown");
       setFeatures(res.data.features || []);
       setExplanation(cleanMarkdown(res.data.explanation || "No explanation available."));
